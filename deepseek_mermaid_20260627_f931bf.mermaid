@@ -1,0 +1,19 @@
+sequenceDiagram
+    participant User
+    participant ContentScript as Content Script
+    participant Background as Background SW
+    participant Offscreen as Offscreen Document
+    participant IDB as IndexedDB
+
+    User->>ContentScript: Types (debounced)
+    ContentScript->>Background: { action: "searchMemory", query, limit }
+    Background->>Offscreen: { action: "search", query, limit }
+    Offscreen->>Offscreen: Embed query -> vector
+    Offscreen->>IDB: getAll records
+    IDB-->>Offscreen: all { text, embedding }
+    Offscreen->>Offscreen: Compute cosine similarity, filter >0.7
+    Offscreen-->>Background: { results: [...] }
+    Background-->>ContentScript: results
+    ContentScript->>ContentScript: Show MemoryChip with snippets
+    User->>ContentScript: Clicks "Insert" on a snippet
+    ContentScript->>ContentScript: Prepend context to input field

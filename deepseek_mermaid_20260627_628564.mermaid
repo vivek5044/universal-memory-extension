@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant User
+    participant ContentScript as Content Script
+    participant Background as Background SW
+    participant Offscreen as Offscreen Document
+    participant IDB as IndexedDB
+
+    User->>ContentScript: Types prompt and sends (click/Ctrl+Enter)
+    ContentScript->>ContentScript: Extract prompt text
+    ContentScript->>Background: { action: "storePrompt", text, source }
+    Background->>Offscreen: { action: "embedAndStore", text, source }
+    Offscreen->>Offscreen: Embed text (MiniLM-L6-v2) -> 384-dim vector
+    Offscreen->>IDB: Save { text, embedding, source, timestamp }
+    Offscreen-->>Background: { success: true }
+    Background-->>ContentScript: ack

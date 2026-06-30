@@ -1,0 +1,44 @@
+classDiagram
+    class ContentScript {
+        +SITE_SELECTORS: object
+        +capturePrompt()
+        +attachSendListeners()
+        +debouncedSearch()
+        +showMemoryChip(results)
+        +insertMemory(text)
+    }
+
+    class BackgroundServiceWorker {
+        +ensureOffscreen()
+        +routeMessage(msg)
+    }
+
+    class OffscreenDocument {
+        -embedder: Pipeline
+        +initEmbedder()
+        +embedText(text): Float32Array
+        +saveToDB(text, embedding, source)
+        +searchSimilar(queryVec, limit, threshold): result[]
+        +cosineSimilarity(a, b)
+    }
+
+    class MemoryDB {
+        +name: "AIMemoryDB"
+        +version: 1
+        +store: "memories"
+        +keyPath: "id"
+        +index: "timestamp"
+    }
+
+    class MemoryRecord {
+        +id: number
+        +text: string
+        +embedding: number[]
+        +source: string
+        +timestamp: number
+    }
+
+    ContentScript --> BackgroundServiceWorker : sendMessage
+    BackgroundServiceWorker --> OffscreenDocument : forward
+    OffscreenDocument --> MemoryDB : IndexedDB operations
+    MemoryDB --> MemoryRecord : stores

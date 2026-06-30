@@ -1,0 +1,22 @@
+graph TD
+    subgraph Chrome_Browser
+        subgraph AI_Chat_Page_A["AI Chat Page (e.g. ChatGPT)"]
+            CS_A[Content Script]
+        end
+        subgraph AI_Chat_Page_B["AI Chat Page (e.g. DeepSeek)"]
+            CS_B[Content Script]
+        end
+
+        BG[Background Service Worker]
+        OFF[Offscreen Document]
+        IDB[(IndexedDB)]
+
+        CS_A -->|storePrompt / searchMemory| BG
+        CS_B -->|storePrompt / searchMemory| BG
+        BG -->|creates & routes messages| OFF
+        OFF -->|read/write vectors| IDB
+    end
+
+    style IDB fill:#f9f,stroke:#333
+    style BG fill:#bbf,stroke:#333
+    style OFF fill:#fbb,stroke:#333
